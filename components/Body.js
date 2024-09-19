@@ -1,7 +1,9 @@
 "use client";
+import { v4 as uuidv4 } from "uuid";
 import React, { useEffect, useState } from "react";
 import "../app/globals.css";
 import { toast } from "sonner";
+import Link from "next/link";
 
 const Body = () => {
   const [show, setShow] = useState(false);
@@ -9,6 +11,7 @@ const Body = () => {
   const [userName, setUserName] = useState("");
   const [password, setPassword] = useState("");
   const [passwordArray, setPasswordArray] = useState([]);
+  const [editProduct, setEditProduct] = useState([]);
   let len;
 
   useEffect(() => {
@@ -30,8 +33,11 @@ const Body = () => {
       password: password,
     };
 
-    setPasswordArray([...passwordArray, form]);
-    localStorage.setItem("passwords", JSON.stringify([...passwordArray, form]));
+    setPasswordArray([...passwordArray, { ...form, id: uuidv4() }]);
+    localStorage.setItem(
+      "passwords",
+      JSON.stringify([...passwordArray, { form, id: uuidv4() }])
+    );
 
     setWebsite("");
     setUserName("");
@@ -39,6 +45,20 @@ const Body = () => {
 
     toast.success("Password Saved Successfully");
   };
+
+  const deleteProduct = (id) => {
+    setPasswordArray(passwordArray.filter((item) => item.id !== id));
+
+    localStorage.setItem(
+      "passwords",
+      JSON.stringify(passwordArray.filter((item) => item.id !== id))
+    );
+  };
+
+  const editPro = (id) => {
+    console.log(id);
+  };
+
   const showEye = (
     <div className="cursor-pointer hover:text-gray-600">
       <svg
@@ -116,6 +136,7 @@ const Body = () => {
               className="border w-full px-4 py-2 border-green-400 rounded-full focus:outline-none shadow-sm"
               type="text"
               placeholder="Enter Username"
+              autoComplete="username"
             />
             <div className="w-full relative">
               <input
@@ -127,6 +148,7 @@ const Body = () => {
                 className="border w-full px-4 py-2 border-green-400 rounded-full focus:outline-none shadow-sm"
                 type={show ? "text" : "password"}
                 placeholder="Enter Password"
+                autoComplete="current-password"
               />
               <span
                 onClick={() => {
@@ -167,82 +189,100 @@ const Body = () => {
                 <th scope="col" className="px-6 py-3 text-lg text-center">
                   Password
                 </th>
-                <th scope="col" className="px-6 py-3 text-center">
-                  <span className="sr-only">Edit</span>
-                </th>
-                <th scope="col" className="px-6 py-3 text-center">
-                  <span className="sr-only">Delete</span>
+                <th scope="col" className="px-6 py-3 text-lg text-center">
+                  <span className="">Action</span>
                 </th>
               </tr>
             </thead>
             <tbody>
               {passwordArray &&
-                passwordArray.map((pass, index) => {
+                passwordArray.map((pass) => {
                   return (
-                    <>
-                      <tr key={index} className="bg-green-100 border-b">
-                        <th
-                          scope="row"
-                          className="px-6 py-4 text-center font-medium text-gray-900 whitespace-nowrap"
+                    <tr key={pass.id} className="bg-green-100 border-b">
+                      <th
+                        scope="row"
+                        className="px-6 py-4 text-center font-medium text-gray-900 whitespace-nowrap"
+                      >
+                        <Link
+                          href={pass.form ? pass.form?.site : ""}
+                          target="_blank"
                         >
-                          <a href={pass.site} target="_blank">
-                            {pass.site}
-                          </a>
-                        </th>
-                        <td className="px-6 py-4 text-center">
-                          <div className="flex gap-2 justify-center items-center">
-                            <span>{pass.username}</span>
-                            <svg
-                              onClick={() => {
-                                copyText(pass.username);
-                              }}
-                              xmlns="http://www.w3.org/2000/svg"
-                              viewBox="0 0 24 24"
-                              fill="currentColor"
-                              className="size-6 hover:text-gray-700 cursor-pointer"
-                            >
-                              <path d="M7.5 3.375c0-1.036.84-1.875 1.875-1.875h.375a3.75 3.75 0 0 1 3.75 3.75v1.875C13.5 8.161 14.34 9 15.375 9h1.875A3.75 3.75 0 0 1 21 12.75v3.375C21 17.16 20.16 18 19.125 18h-9.75A1.875 1.875 0 0 1 7.5 16.125V3.375Z" />
-                              <path d="M15 5.25a5.23 5.23 0 0 0-1.279-3.434 9.768 9.768 0 0 1 6.963 6.963A5.23 5.23 0 0 0 17.25 7.5h-1.875A.375.375 0 0 1 15 7.125V5.25ZM4.875 6H6v10.125A3.375 3.375 0 0 0 9.375 19.5H16.5v1.125c0 1.035-.84 1.875-1.875 1.875h-9.75A1.875 1.875 0 0 1 3 20.625V7.875C3 6.839 3.84 6 4.875 6Z" />
-                            </svg>
-                          </div>
-                        </td>
-                        <td className="px-6 py-4 text-center">
-                          <div className="flex gap-2 justify-center items-center">
-                            <span className="flex justify-center text-xl items-center gap-2">
-                              * * * * *
-                            </span>
-                            <svg
-                              onClick={() => {
-                                copyText(pass.password);
-                              }}
-                              xmlns="http://www.w3.org/2000/svg"
-                              viewBox="0 0 24 24"
-                              fill="currentColor"
-                              className="size-6 hover:text-gray-700 cursor-pointer"
-                            >
-                              <path d="M7.5 3.375c0-1.036.84-1.875 1.875-1.875h.375a3.75 3.75 0 0 1 3.75 3.75v1.875C13.5 8.161 14.34 9 15.375 9h1.875A3.75 3.75 0 0 1 21 12.75v3.375C21 17.16 20.16 18 19.125 18h-9.75A1.875 1.875 0 0 1 7.5 16.125V3.375Z" />
-                              <path d="M15 5.25a5.23 5.23 0 0 0-1.279-3.434 9.768 9.768 0 0 1 6.963 6.963A5.23 5.23 0 0 0 17.25 7.5h-1.875A.375.375 0 0 1 15 7.125V5.25ZM4.875 6H6v10.125A3.375 3.375 0 0 0 9.375 19.5H16.5v1.125c0 1.035-.84 1.875-1.875 1.875h-9.75A1.875 1.875 0 0 1 3 20.625V7.875C3 6.839 3.84 6 4.875 6Z" />
-                            </svg>
-                          </div>
-                        </td>
-                        <td className="px-6 py-4 text-center">
-                          <a
-                            href="#"
-                            className="font-medium text-blue-600 hover:underline"
+                          {pass.form?.site}
+                        </Link>
+                      </th>
+                      <td className="px-6 py-4 text-center">
+                        <div className="flex gap-2 justify-center items-center">
+                          <span>{pass.form?.username}</span>
+                          <svg
+                            onClick={() => {
+                              copyText(pass.form?.username);
+                            }}
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 24 24"
+                            fill="currentColor"
+                            className="size-6 hover:text-gray-700 cursor-pointer"
                           >
-                            Edit
-                          </a>
-                        </td>
-                        <td className="px-6 py-4 text-center">
-                          <a
-                            href="#"
-                            className="font-medium text-red-600 hover:underline"
+                            <path d="M7.5 3.375c0-1.036.84-1.875 1.875-1.875h.375a3.75 3.75 0 0 1 3.75 3.75v1.875C13.5 8.161 14.34 9 15.375 9h1.875A3.75 3.75 0 0 1 21 12.75v3.375C21 17.16 20.16 18 19.125 18h-9.75A1.875 1.875 0 0 1 7.5 16.125V3.375Z" />
+                            <path d="M15 5.25a5.23 5.23 0 0 0-1.279-3.434 9.768 9.768 0 0 1 6.963 6.963A5.23 5.23 0 0 0 17.25 7.5h-1.875A.375.375 0 0 1 15 7.125V5.25ZM4.875 6H6v10.125A3.375 3.375 0 0 0 9.375 19.5H16.5v1.125c0 1.035-.84 1.875-1.875 1.875h-9.75A1.875 1.875 0 0 1 3 20.625V7.875C3 6.839 3.84 6 4.875 6Z" />
+                          </svg>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 text-center">
+                        <div className="flex gap-2 justify-center items-center">
+                          <span className="flex justify-center text-xl items-center gap-2">
+                            * * * * *
+                          </span>
+                          <svg
+                            onClick={() => {
+                              copyText(pass.form?.password);
+                            }}
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 24 24"
+                            fill="currentColor"
+                            className="size-6 hover:text-gray-700 cursor-pointer"
                           >
-                            Delete
-                          </a>
-                        </td>
-                      </tr>
-                    </>
+                            <path d="M7.5 3.375c0-1.036.84-1.875 1.875-1.875h.375a3.75 3.75 0 0 1 3.75 3.75v1.875C13.5 8.161 14.34 9 15.375 9h1.875A3.75 3.75 0 0 1 21 12.75v3.375C21 17.16 20.16 18 19.125 18h-9.75A1.875 1.875 0 0 1 7.5 16.125V3.375Z" />
+                            <path d="M15 5.25a5.23 5.23 0 0 0-1.279-3.434 9.768 9.768 0 0 1 6.963 6.963A5.23 5.23 0 0 0 17.25 7.5h-1.875A.375.375 0 0 1 15 7.125V5.25ZM4.875 6H6v10.125A3.375 3.375 0 0 0 9.375 19.5H16.5v1.125c0 1.035-.84 1.875-1.875 1.875h-9.75A1.875 1.875 0 0 1 3 20.625V7.875C3 6.839 3.84 6 4.875 6Z" />
+                          </svg>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 text-center flex justify-around">
+                        <button
+                          onClick={() => {
+                            editPro(pass.id);
+                          }}
+                          className="font-medium flex gap-2 justify-center items-center text-lg text-blue-600 hover:underline"
+                        >
+                          {/* <span>Edit</span> */}
+                          <lord-icon
+                            src="https://cdn.lordicon.com/ghhwiltn.json"
+                            trigger="hover"
+                            stroke="bold"
+                            colors="primary:#515050,secondary:#515050"
+                            style={{ width: "35px" }}
+                          ></lord-icon>
+                        </button>
+                        <button
+                          onClick={() => {
+                            deleteProduct(pass.id);
+                          }}
+                          type="button"
+                          className="font-medium flex gap-2 justify-center items-center text-lg text-red-600 hover:underline"
+                        >
+                          {/* <span>Delete</span> */}
+                          <lord-icon
+                            src="https://cdn.lordicon.com/drxwpfop.json"
+                            trigger="morph"
+                            stroke="bold"
+                            state="morph-trash-in"
+                            className="w-2"
+                            colors="primary:#515050,secondary:#515050"
+                            style={{ width: "35px" }}
+                          ></lord-icon>
+                        </button>
+                      </td>
+                      {/* <td className="px-6 py-4 text-center"></td> */}
+                    </tr>
                   );
                 })}
             </tbody>

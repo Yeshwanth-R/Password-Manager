@@ -3,9 +3,28 @@
 @tailwind utilities;
 
 body {
-    background-image: url('https://img.freepik.com/free-photo/abstract-luxury-gradient-blue-background-smooth-dark-blue-with-black-vignette-studio-banner_1258-52334.jpg?t=st=1726242547~exp=1726246147~hmac=b601aa6943fa779f5598596c751d0c9f63da15140ad9a5e9d84b75c98f895319&w=1380');
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-attachment: fixed;
+  background-image: url("https://img.freepik.com/free-photo/abstract-luxury-gradient-blue-background-smooth-dark-blue-with-black-vignette-studio-banner_1258-52334.jpg?t=st=1726242547~exp=1726246147~hmac=b601aa6943fa779f5598596c751d0c9f63da15140ad9a5e9d84b75c98f895319&w=1380");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
 }
+
+/* For WebKit browsers (Chrome, Safari, etc.) */
+::-webkit-scrollbar {
+  width: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1; /* Track color */
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #4caf50; /* Green color for the thumb */
+  border-radius: 6px;
+  border: 3px solid #f1f1f1; /* Gives the thumb a smaller size */
+}
+
+/* For Firefox */
+scrollbar-color: #4caf50 #f1f1f1;
+scrollbar-width: thin;
