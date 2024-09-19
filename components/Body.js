@@ -10,9 +10,13 @@ const Body = () => {
   const [website, setWebsite] = useState("");
   const [userName, setUserName] = useState("");
   const [password, setPassword] = useState("");
+  const [form, setForm] = useState({
+    site: "",
+    username: "",
+    password: "",
+  });
   const [passwordArray, setPasswordArray] = useState([]);
   const [editProduct, setEditProduct] = useState([]);
-  let len;
 
   useEffect(() => {
     let password = localStorage.getItem("passwords");
@@ -26,22 +30,18 @@ const Body = () => {
     toast.success("Copied Successfully");
   };
 
-  const savePassword = () => {
-    const form = {
-      site: website,
-      username: userName,
-      password: password,
-    };
-
-    setPasswordArray([...passwordArray, { ...form, id: uuidv4() }]);
+  const savePassword = (ev) => {
+    setPasswordArray([...passwordArray, { form, id: uuidv4() }]);
     localStorage.setItem(
       "passwords",
       JSON.stringify([...passwordArray, { form, id: uuidv4() }])
     );
 
-    setWebsite("");
-    setUserName("");
-    setPassword("");
+    setForm({
+      site: "",
+      username: "",
+      password: "",
+    });
 
     toast.success("Password Saved Successfully");
   };
@@ -56,7 +56,13 @@ const Body = () => {
   };
 
   const editPro = (id) => {
-    console.log(id);
+    setForm(passwordArray.filter((item) => item.id === id)[0].form);
+    setPasswordArray(passwordArray.filter((item) => item.id !== id));
+
+    localStorage.setItem(
+      "passwords",
+      JSON.stringify(passwordArray.filter((item) => item.id !== id))
+    );
   };
 
   const showEye = (
@@ -95,10 +101,13 @@ const Body = () => {
     </div>
   );
 
+  const handleChange = (ev) => {
+    setForm({ ...form, [ev.target.name]: ev.target.value });
+  };
+
   return (
     <>
       <form
-        onSubmit={savePassword}
         className="mx-20 mt-10 flex flex-col gap-5 px-10 py-10 rounded-xl"
         style={{ backgroundColor: "rgba(240, 252, 253, 0.5)" }}
       >
@@ -117,9 +126,11 @@ const Body = () => {
             </label> */}
             <input
               required
-              value={website}
+              name="site"
+              value={form.site}
               onChange={(ev) => {
-                setWebsite(ev.target.value);
+                // setWebsite(ev.target.value);
+                handleChange(ev);
               }}
               className="border px-4 py-2 border-green-400 rounded-full focus:outline-none shadow-sm"
               type="text"
@@ -129,9 +140,11 @@ const Body = () => {
           <div className="flex gap-8">
             <input
               required
-              value={userName}
+              name="username"
+              value={form.username}
               onChange={(ev) => {
-                setUserName(ev.target.value);
+                // setUserName(ev.target.value);
+                handleChange(ev);
               }}
               className="border w-full px-4 py-2 border-green-400 rounded-full focus:outline-none shadow-sm"
               type="text"
@@ -141,9 +154,11 @@ const Body = () => {
             <div className="w-full relative">
               <input
                 required
-                value={password}
+                name="password"
+                value={form.password}
                 onChange={(ev) => {
-                  setPassword(ev.target.value);
+                  // setPassword(ev.target.value);
+                  handleChange(ev);
                 }}
                 className="border w-full px-4 py-2 border-green-400 rounded-full focus:outline-none shadow-sm"
                 type={show ? "text" : "password"}
@@ -162,7 +177,10 @@ const Body = () => {
           </div>
           <div className="flex justify-center">
             <button
-              type="submit"
+              type="button"
+              onClick={(ev) => {
+                savePassword(ev);
+              }}
               className="bg-green-400 border-2 border-green-900 hover:bg-green-300 flex gap-2 justify-center items-center px-3 py-1 rounded-xl text-lg"
             >
               <lord-icon
@@ -251,6 +269,7 @@ const Body = () => {
                           onClick={() => {
                             editPro(pass.id);
                           }}
+                          type="button"
                           className="font-medium flex gap-2 justify-center items-center text-lg text-blue-600 hover:underline"
                         >
                           {/* <span>Edit</span> */}

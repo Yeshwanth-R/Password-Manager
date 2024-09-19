@@ -16,7 +16,7 @@ export default function RootLayout({ children }) {
         <script src="https://cdn.lordicon.com/lordicon.js"></script>
       </head>
       <body className={inter.className}>{children}
-        <Toaster richColors position="top-right" />
+        <Toaster expand={true} richColors position="top-right" />
       </body>
     </html>
   );
