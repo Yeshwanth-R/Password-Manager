@@ -34,7 +34,7 @@ const NavBar = () => {
             <Image
               className="invert"
               width={35}
-              height={35}
+              height={"auto"}
               src={svg}
               alt="github"
             />
